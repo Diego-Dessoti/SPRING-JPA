@@ -16,8 +16,17 @@ public class UserService {
     public List<User> findAll() {
         return userRepository.findAll();
     }
+
     public User findById(Long id) {
         return userRepository.findById(id).get();
     }
 
+    public User create(User user) {
+        return userRepository.save(user);
+    }
+
+    public void delete(Long id) {
+
+        userRepository.deleteById(id);
+    }
 }
