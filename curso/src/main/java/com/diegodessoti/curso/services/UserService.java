@@ -2,7 +2,9 @@ package com.diegodessoti.curso.services;
 
 import com.diegodessoti.curso.entities.User;
 import com.diegodessoti.curso.repositories.UserRepository;
+import com.diegodessoti.curso.services.exceptions.DatabaseException;
 import com.diegodessoti.curso.services.exceptions.ResourceNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,14 +31,27 @@ public class UserService {
     }
 
     public void delete(Long id) {
-        userRepository.deleteById(id);
-
+        try {
+            if (!userRepository.existsById(id)) {
+                throw new DatabaseException("Usuário com o ID " + id + " não existe.");
+            }
+            userRepository.deleteById(id);
+        } catch (EntityNotFoundException e) {
+            throw new DatabaseException(e.getMessage());
+        }
     }
 
+
     public User update(Long id, User obj) {
-        User entity = userRepository.getReferenceById(id);
-        updateData(entity, obj);
-        return userRepository.save(entity);
+        try {
+            User entity = userRepository.getReferenceById(id);
+            updateData(entity, obj);
+            return userRepository.save(entity);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ResourceNotFoundException(e.getMessage());
+
+        }
 
     }
 
